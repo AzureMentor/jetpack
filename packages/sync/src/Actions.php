@@ -20,6 +20,7 @@ class Actions {
 	static function init() {
 		// everything below this point should only happen if we're a valid sync site
 		if ( ! self::sync_allowed() ) {
+			error_log( 'BAILING OUT!' );
 			return;
 		}
 
@@ -109,20 +110,32 @@ class Actions {
 		}
 
 		if ( ! Settings::is_sync_enabled() ) {
+			error_log( "sync not enabled\n" );
 			return false;
 		}
 
 		$status = new Status();
-		if ( $status->is_development_mode() ) {
+		if (
+			$status->is_development_mode() && !
+			( defined( 'WP_CLI' ) && WP_CLI ) && !
+			(
+				'/wp-cron.php' == wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) &&
+				isset( $_REQUEST['doing_wp_cron'] )
+			)
+		) {
+			error_log( "is development node\n" );
 			return false;
 		}
 
 		if ( \Jetpack::is_staging_site() ) {
+			error_log( "is staging site\n" );
 			return false;
 		}
 
 		if ( ! \Jetpack::is_active() ) {
+			error_log( "jetpack not active\n" );
 			if ( ! doing_action( 'jetpack_user_authorized' ) ) {
+				error_log( "jetpack not authorized\n" );
 				return false;
 			}
 		}
