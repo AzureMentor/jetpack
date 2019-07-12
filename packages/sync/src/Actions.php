@@ -2,6 +2,8 @@
 
 namespace Automattic\Jetpack\Sync;
 
+add_filter( 'jetpack_development_mode', '__return_false' );
+
 use Automattic\Jetpack\Constants;
 use Automattic\Jetpack\Status;
 
@@ -20,7 +22,6 @@ class Actions {
 	static function init() {
 		// everything below this point should only happen if we're a valid sync site
 		if ( ! self::sync_allowed() ) {
-			error_log( 'BAILING OUT!' );
 			return;
 		}
 
@@ -106,29 +107,23 @@ class Actions {
 
 	static function sync_allowed() {
 		if ( defined( 'PHPUNIT_JETPACK_TESTSUITE' ) ) {
+			l( 'is test' );
 			return true;
 		}
 
 		if ( ! Settings::is_sync_enabled() ) {
-			error_log( "sync not enabled\n" );
+			error_log( "ERROR: sync not enabled\n" );
 			return false;
 		}
 
 		$status = new Status();
-		if (
-			$status->is_development_mode() && !
-			( defined( 'WP_CLI' ) && WP_CLI ) && !
-			(
-				'/wp-cron.php' == wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) &&
-				isset( $_REQUEST['doing_wp_cron'] )
-			)
-		) {
-			error_log( "is development node\n" );
+		if ( $status->is_development_mode() ) {
+			error_log( "ERROR: is development node\n" );
 			return false;
 		}
 
 		if ( \Jetpack::is_staging_site() ) {
-			error_log( "is staging site\n" );
+			error_log( "ERROR: is staging site\n" );
 			return false;
 		}
 
