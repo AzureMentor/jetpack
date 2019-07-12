@@ -2,8 +2,6 @@
 
 namespace Automattic\Jetpack\Sync;
 
-add_filter( 'jetpack_development_mode', '__return_false' );
-
 use Automattic\Jetpack\Constants;
 use Automattic\Jetpack\Status;
 
@@ -107,30 +105,24 @@ class Actions {
 
 	static function sync_allowed() {
 		if ( defined( 'PHPUNIT_JETPACK_TESTSUITE' ) ) {
-			l( 'is test' );
 			return true;
 		}
 
 		if ( ! Settings::is_sync_enabled() ) {
-			error_log( "ERROR: sync not enabled\n" );
 			return false;
 		}
 
 		$status = new Status();
 		if ( $status->is_development_mode() ) {
-			error_log( "ERROR: is development node\n" );
 			return false;
 		}
 
 		if ( \Jetpack::is_staging_site() ) {
-			error_log( "ERROR: is staging site\n" );
 			return false;
 		}
 
 		if ( ! \Jetpack::is_active() ) {
-			error_log( "jetpack not active\n" );
 			if ( ! doing_action( 'jetpack_user_authorized' ) ) {
-				error_log( "jetpack not authorized\n" );
 				return false;
 			}
 		}
