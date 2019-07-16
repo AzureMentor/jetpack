@@ -32,7 +32,7 @@ const UpgradeNudge = ( { autosaveAndRedirectToUpgrade, planName } ) => (
 			<Gridicon className="jetpack-upgrade-nudge__icon" icon="star" size={ 18 } />
 			<div>
 				<span className="jetpack-upgrade-nudge__title">
-					{ sprintf( __( 'This block is available under the %(planName)s Plan.', 'jetpack' ), {
+					{ sprintf( __( 'This block is available under the %(planName)s plan.', 'jetpack' ), {
 						planName,
 					} ) }
 				</span>
